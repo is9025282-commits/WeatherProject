@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Market & Search Startpage</title>
+  <style>
+    :root {
+      --bg-main: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #26354d;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --border: #334155;
+      --accent: #38bdf8;
+      --up-color: #ef4444;     /* 한국식 상승 (빨강) */
+      --down-color: #3b82f6;   /* 한국식 하락 (파랑) */
+      --google-color: #4285F4;
+      --yandex-color: #FC3F1D;
+      --yahoo-color: #6001D2;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    /* 1. 상단 시계 및 월드 마켓 타임 */
+    .header-section {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg-card);
+      padding: 1.5rem 2rem;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .main-clock .date-str {
+      font-size: 0.95rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .main-clock .time-str {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .world-clocks {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .world-clock-item {
+      background: rgba(15, 23, 42, 0.6);
+      padding: 0.75rem 1.1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      min-width: 135px;
+    }
+
+    .world-clock-item .city {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .world-clock-item .w-time {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-top: 0.2rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* 2. 멀티 검색창 (Google, Yandex, Yahoo) */
+    .search-section {
+      background: var(--bg-card);
+      padding: 1.5rem 2rem;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .engine-tabs {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .engine-btn {
+      padding: 0.5rem 1.1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-main);
+      color: var(--text-sub);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .engine-btn.active[data-engine="google"] {
+      background: var(--google-color);
+      color: #fff;
+      border-color: var(--google-color);
+    }
+
+    .engine-btn.active[data-engine="yandex"] {
+      background: var(--yandex-color);
+      color: #fff;
+      border-color: var(--yandex-color);
+    }
+
+    .engine-btn.active[data-engine="yahoo"] {
+      background: var(--yahoo-color);
+      color: #fff;
+      border-color: var(--yahoo-color);
+    }
+
+    .search-form {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 0.9rem 1.25rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-main);
+      color: var(--text-main);
+      font-size: 1.05rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+
+    .search-submit {
+      padding: 0 1.75rem;
+      border-radius: 10px;
+      border: none;
+      background: var(--accent);
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .search-submit:hover {
+      opacity: 0.9;
+    }
+
+    /* 3. 주요 국제 주식 변동 섹션 */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .view-toggle-btn {
+      background: var(--bg-card);
+      color: var(--accent);
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .stock-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .stock-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem 1.35rem;
+      transition: transform 0.15s, background 0.15s;
+    }
+
+    .stock-card:hover {
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .stock-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+    }
+
+    .stock-name {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .stock-market {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      background: rgba(15, 23, 42, 0.7);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .stock-price {
+      font-size: 1.5rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      margin: 0.25rem 0;
+    }
+
+    .stock-change {
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .up { color: var(--up-color); }
+    .down { color: var(--down-color); }
+
+    #live-widget-container {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      min-height: 420px;
+    }
+
+    /* 4. 관련 뉴스 섹션 */
+    .news-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem 2rem;
+    }
+
+    .news-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .news-item {
+      padding: 1rem 1.2rem;
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .news-item:hover {
+      border-color: var(--accent);
+    }
+
+    .news-tag-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-sub);
+    }
+
+    .news-badge {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .news-headline {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .news-desc {
+      font-size: 0.9rem;
+      color: var(--text-sub);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- 1. 현재 시각 & 주요 금융 허브 시계 -->
+    <header class="header-section">
+      <div class="main-clock">
+        <div class="date-str" id="kr-date">2026년 10월 16일 금요일</div>
+        <div class="time-str" id="kr-time">00:00:00</div>
+      </div>
+      <div class="world-clocks">
+        <div class="world-clock-item">
+          <div class="city"><span>뉴욕 (NYSE)</span></div>
+          <div class="w-time" id="ny-time">--:--:--</div>
+        </div>
+        <div class="world-clock-item">
+          <div class="city"><span>런던 (LSE)</span></div>
+          <div class="w-time" id="ldn-time">--:--:--</div>
+        </div>
+        <div class="world-clock-item">
+          <div class="city"><span>도쿄 (TSE)</span></div>
+          <div class="w-time" id="tyo-time">--:--:--</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 2. 검색 섹션 (구글, 얀덱스, 야후) -->
+    <section class="search-section">
+      <div class="engine-tabs">
+        <button type="button" class="engine-btn active" data-engine="google" onclick="selectEngine('google')">Google (Alt+1)</button>
+        <button type="button" class="engine-btn" data-engine="yandex" onclick="selectEngine('yandex')">Yandex (Alt+2)</button>
+        <button type="button" class="engine-btn" data-engine="yahoo" onclick="selectEngine('yahoo')">Yahoo (Alt+3)</button>
+      </div>
+      <form class="search-form" id="search-form" onsubmit="handleSearch(event)">
+        <input type="text" id="search-input" class="search-input" placeholder="Google에서 검색할 내용을 입력하세요..." autofocus required>
+        <button type="submit" class="search-submit">검색</button>
+      </form>
+    </section>
+
+    <!-- 3. 주요 국제 주식 변동 -->
+    <section>
+      <div class="section-header">
+        <div class="section-title">주요 국제 증시 및 지표 현황</div>
+        <button type="button" class="view-toggle-btn" id="toggle-widget-btn" onclick="toggleStockView()">실시간 차트 위젯 보기</button>
+      </div>
+
+      <!-- 기본 요약 카드 그리드 (2026-10-16 기준 데이터) -->
+      <div class="stock-grid" id="snapshot-grid">
+        <div class="stock-card">
+          <div class="stock-top"><span class="stock-name">KOSPI (코스피)</span><span class="stock-market">KRX · 10/16 마감</span></div>
+          <div class="stock-price">5,668.05</div>
+          <div class="stock-change up"><span>▲ 113.83</span><span>(+2.05%)</span></div>
+        </div>
+        <div class="stock-card">
+          <div class="stock-top"><span class="stock-name">KOSDAQ (코스닥)</span><span class="stock-market">KRX · 10/16 마감</span></div>
+          <div class="stock-price">794.78</div>
+          <div class="stock-change up"><span>▲ 33.96</span><span>(+4.46%)</span></div>
+        </div>
+        <div class="stock-card">
+          <div class="stock-top"><span class="stock-name">S&amp;P 500</span><span class="stock-market">US · 10/15 마감</span></div>
+          <div class="stock-price">7,744.06</div>
+          <div class="stock-change up"><span>▲ 25.12</span><span>(+0.33%)</span></div>
+        </div>
+        <div class="stock-card">
+          <div class="stock-top"><span class="stock-name">Dow Jones (다우)</span><span class="stock-market">US · 10/15 마감</span></div>
+          <div class="stock-price">52,177.69</div>
+          <div class="stock-change up"><span>▲ 556.21</span><span>(+1.08%)</span></div>
+        </div>
+        <div class="stock-card">
+          <div class="stock-top"><span class="stock-name">NASDAQ (나스닥)</span><span class="stock-market">US · 10/15 마감</span></div>
+          <div class="stock-price">26,713.03</div>
+          <div class="stock-change up"><span>▲ 20.16</span><span>(+0.08%)</span></div>
+        </div>
+        <div class="stock-card">
+          <div class="stock-top"><span class="stock-name">Nikkei 225 (니케이)</span><span class="stock-market">JP · 10/16 마감</span></div>
+          <div class="stock-price">65,658.59</div>
+          <div class="stock-change up"><span>▲ 1,224.20</span><span>(+1.90%)</span></div>
+        </div>
+        <div class="stock-card">
+          <div class="stock-top"><span class="stock-name">Hang Seng (항셍)</span><span class="stock-market">HK · 10/16 기준</span></div>
+          <div class="stock-price">24,353.69</div>
+          <div class="stock-change up"><span>▲ 288.78</span><span>(+1.20%)</span></div>
+        </div>
+        <div class="stock-card">
+          <div class="stock-top"><span class="stock-name">원/달러 환율 (USD/KRW)</span><span class="stock-market">FX · 10/16 마감</span></div>
+          <div class="stock-price">1,331.40</div>
+          <div class="stock-change down"><span>▼ 13.20</span><span>(-0.98%)</span></div>
+        </div>
+      </div>
+
+      <!-- TradingView 실시간 글로벌 증시 위젯 영역 -->
+      <div id="live-widget-container">
+        <div class="tradingview-widget-container" id="tv-container"></div>
+      </div>
+    </section>
+
+    <!-- 4. 오늘의 주요 국제 증시 뉴스 -->
+    <section class="news-section">
+      <div class="section-header">
+        <div class="section-title">주요 국제 증시 및 경제 뉴스</div>
+        <button type="button" class="view-toggle-btn" onclick="fetchLiveNews()">실시간 RSS 뉴스 불러오기</button>
+      </div>
+      <div class="news-list" id="news-list">
+        <a class="news-item" href="https://news.google.com/search?q=%EC%BD%94%EC%8A%A4%ED%94%BC+%EB%B0%98%EB%93%B1&hl=ko&gl=KR&ceid=KR:ko" target="_blank" rel="noopener">
+          <div class="news-tag-row"><span class="news-badge">국내·아시아 증시</span><span>2026.10.16</span></div>
+          <div class="news-headline">코스피, 전날 서킷브레이커 급락 딛고 8거래일 만에 2.05% 반등 (5,668.05 마감)</div>
+          <div class="news-desc">삼성전자(+4.2%), SK하이닉스(+3.5%) 등 반도체주 회복세와 함께 일본 니케이 225(+1.9%), 홍콩 항셍(+1.2%) 등 아시아 주요 증시가 일제히 반등에 성공했습니다.</div>
+        </a>
+        <a class="news-item" href="https://news.google.com/search?q=S%26P+500+Dow+Jones&hl=ko&gl=KR&ceid=KR:ko" target="_blank" rel="noopener">
+          <div class="news-tag-row"><span class="news-badge">미국 월가 시황</span><span>2026.10.16</span></div>
+          <div class="news-headline">미 3대 지수 상승 마감… 다우 +1.08%·S&amp;P 500 +0.33%, 국채 금리 진정세</div>
+          <div class="news-desc">미국 생산자물가지수(PPI) 급등 여파로 장 초반 흔들렸던 뉴욕 증시는 AI 클라우드 기업 코어위브(+5.9%) 반등과 국채 금리 안정에 힘입어 상승 전환했습니다.</div>
+        </a>
+        <a class="news-item" href="https://news.google.com/search?q=TSMC+%EC%8B%A4%EC%A0%81&hl=ko&gl=KR&ceid=KR:ko" target="_blank" rel="noopener">
+          <div class="news-tag-row"><span class="news-badge">글로벌 테크·반도체</span><span>2026.10.16</span></div>
+          <div class="news-headline">TSMC 3분기 순이익 68.7% 급증 사상 최대… 2027년 설비투자 전망은 신중</div>
+          <div class="news-desc">3분기 순이익 7,630억 대만달러로 시장 예상치를 상회하고 4분기 매출 가이던스도 긍정적으로 제시했으나, 거시경제 불확실성에 따른 신중론으로 ADR은 1.8% 하락했습니다.</div>
+        </a>
+        <a class="news-item" href="https://news.google.com/search?q=MSCI+Indonesia+market&hl=ko&gl=KR&ceid=KR:ko" target="_blank" rel="noopener">
+          <div class="news-tag-row"><span class="news-badge">신흥국·원자재</span><span>2026.10.16</span></div>
+          <div class="news-headline">인도네시아 증시, MSCI 시장 등급 강등 경고에 2008년 이후 최대 폭락</div>
+          <div class="news-desc">MSCI의 독립시장 강등 검토 소식에 인도네시아 증시가 급락한 가운데, 국제 금 선물 가격은 온스당 4,200달러 선을 재돌파하며 안전자산 선호도 함께 나타났습니다.</div>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // 1. 실시간 시계 업데이트 (한국, 뉴욕, 런던, 도쿄)
+    function updateClocks() {
+      const now = new Date();
+
+      const krDateFormatter = new Intl.DateTimeFormat('ko-KR', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
+      });
+      const krTimeFormatter = new Intl.DateTimeFormat('ko-KR', {
+        timeZone: 'Asia/Seoul',
+        hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+      const nyFormatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+      const ldnFormatter = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/London',
+        hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+      const tyoFormatter = new Intl.DateTimeFormat('ja-JP', {
+        timeZone: 'Asia/Tokyo',
+        hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+
+      document.getElementById('kr-date').textContent = krDateFormatter.format(now);
+      document.getElementById('kr-time').textContent = krTimeFormatter.format(now);
+      document.getElementById('ny-time').textContent = nyFormatter.format(now);
+      document.getElementById('ldn-time').textContent = ldnFormatter.format(now);
+      document.getElementById('tyo-time').textContent = tyoFormatter.format(now);
+    }
+    setInterval(updateClocks, 1000);
+    updateClocks();
+
+    // 2. 검색 엔진 전환 및 검색 실행 (Google, Yandex, Yahoo)
+    let currentEngine = 'google';
+    const engines = {
+      google: {
+        name: 'Google',
+        url: 'https://www.google.com/search?q='
+      },
+      yandex: {
+        name: 'Yandex',
+        url: 'https://yandex.com/search/?text='
+      },
+      yahoo: {
+        name: 'Yahoo',
+        url: 'https://search.yahoo.com/search?p='
+      }
+    };
+
+    function selectEngine(engineKey) {
+      currentEngine = engineKey;
+      document.querySelectorAll('.engine-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.engine === engineKey);
+      });
+      const input = document.getElementById('search-input');
+      input.placeholder = engines[engineKey].name + '에서 검색할 내용을 입력하세요...';
+      input.focus();
+    }
+
+    function handleSearch(event) {
+      event.preventDefault();
+      const query = document.getElementById('search-input').value.trim();
+      if (!query) return;
+      window.location.href = engines[currentEngine].url + encodeURIComponent(query);
+    }
+
+    // 단축키 지원 (Alt+1: Google, Alt+2: Yandex, Alt+3: Yahoo)
+    window.addEventListener('keydown', (e) => {
+      if (e.altKey && e.key === '1') { e.preventDefault(); selectEngine('google'); }
+      if (e.altKey && e.key === '2') { e.preventDefault(); selectEngine('yandex'); }
+      if (e.altKey && e.key === '3') { e.preventDefault(); selectEngine('yahoo'); }
+    });
+
+    // 3. 요약 카드 <-> TradingView 실시간 위젯 전환
+    let widgetLoaded = false;
+    let showingWidget = false;
+
+    function toggleStockView() {
+      const snapshotGrid = document.getElementById('snapshot-grid');
+      const liveContainer = document.getElementById('live-widget-container');
+      const btn = document.getElementById('toggle-widget-btn');
+
+      showingWidget = !showingWidget;
+      if (showingWidget) {
+        snapshotGrid.style.display = 'none';
+        liveContainer.style.display = 'block';
+        btn.textContent = '요약 카드로 돌아가기';
+
+        if (!widgetLoaded) {
+          const script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js';
+          script.async = true;
+          script.innerHTML = JSON.stringify({
+            "colorTheme": "dark",
+            "dateRange": "1D",
+            "showChart": true,
+            "locale": "kr",
+            "width": "100%",
+            "height": "450",
+            "isTransparent": true,
+            "showSymbolLogo": true,
+            "tabs": [
+              {
+                "title": "주요 국제 지수",
+                "symbols": [
+                  { "s": "FOREXCOM:SPXUSD", "d": "S&P 500" },
+                  { "s": "FOREXCOM:NSXUSD", "d": "US 100 (나스닥)" },
+                  { "s": "FOREXCOM:DJI", "d": "Dow 30 (다우존스)" },
+                  { "s": "INDEX:NKY", "d": "Nikkei 225 (니케이)" },
+                  { "s": "INDEX:HSI", "d": "Hang Seng (항셍)" },
+                  { "s": "FX_IDC:USDKRW", "d": "원/달러 환율" }
+                ]
+              }
+            ]
+          });
+          document.getElementById('tv-container').appendChild(script);
+          widgetLoaded = true;
+        }
+      } else {
+        snapshotGrid.style.display = 'grid';
+        liveContainer.style.display = 'none';
+        btn.textContent = '실시간 차트 위젯 보기';
+      }
+    }
+
+    // 4. 실시간 금융 뉴스 RSS 로드 (rss2json 활용)
+    async function fetchLiveNews() {
+      const newsList = document.getElementById('news-list');
+      const rssUrl = encodeURIComponent('https://news.google.com/rss/search?q=%EA%B5%AD%EC%A0%9C+%EC%A6%9D%EC%8B%9C+OR+%EB%82%98%EC%8A%A4%EB%8B%A5+OR+%EC%BD%94%EC%8A%A4%ED%94%BC&hl=ko&gl=KR&ceid=KR:ko');
+      try {
+        const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=' + rssUrl);
+        const data = await res.json();
+        if (data.status === 'ok' && data.items.length) {
+          newsList.innerHTML = '';
+          data.items.slice(0, 5).forEach(item => {
+            const a = document.createElement('a');
+            a.className = 'news-item';
+            a.href = item.link;
+            a.target = '_blank';
+            a.rel = 'noopener';
+            a.innerHTML =
+              '<div class="news-tag-row"><span class="news-badge">실시간 뉴스 피드</span><span>' + item.pubDate.slice(0, 16) + '</span></div>' +
+              '<div class="news-headline">' + item.title + '</div>';
+            newsList.appendChild(a);
+          });
+        }
+      } catch (err) {
+        alert('실시간 뉴스를 불러오지 못했습니다. 기본 헤드라인을 유지합니다.');
+      }
+    }
+  </script>
+</body>
+</html>
